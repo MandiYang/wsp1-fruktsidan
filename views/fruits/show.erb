@@ -2,3 +2,6 @@
 
 <p><em>Smakpoäng: </em> <%= @fruit['tastiness'] %></p>
 <p><em>Beskrivning: </em> <%= @fruit['description'] %></p>
+<% if @category %>
+  <p><em>Kategori: </em> <a href="/categories/<%= @category['id'] %>"><%= @category['name'] %></a></p>
+<% end %>

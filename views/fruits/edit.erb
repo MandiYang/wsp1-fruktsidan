@@ -3,5 +3,12 @@
 <form action="/fruits/<%= @fruit['id']%>/update" method="post">
 <label>Frukt <input type="text" name="fruit_name" value="<%= @fruit['name']%>"></label>
 <label>Beskrivning <input type="text" name="fruit_description" value="<%= @fruit['description']%>"></label>
+<label>Kategori
+	<select name="category_id">
+		<% @categories.each do |category| %>
+			<option value="<%= category['id'] %>" <%= 'selected' if category['id'] == @fruit['category_id'] %>><%= category['name'] %></option>
+		<% end %>
+	</select>
+</label>
 <input type="submit" value="Uppdatera">
 </form>

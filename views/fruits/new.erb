@@ -3,5 +3,12 @@
 <form action="/fruits" method="post">
 	<label>Frukt <input type="text" name="fruit_name"></label>
 	<label>Beskrivning <input type="text" name="fruit_description"></label>
+	<label>Kategori
+		<select name="category_id">
+			<% @categories.each do |category| %>
+				<option value="<%= category['id'] %>"><%= category['name'] %></option>
+			<% end %>
+		</select>
+	</label>
 	<input type="submit" value="Spara">
 </form>

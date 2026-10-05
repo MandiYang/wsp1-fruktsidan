@@ -29,29 +29,31 @@ class App < Sinatra::Base
 
     # Routen visar ett formulär för att spara en ny frukt till databasen.
     get '/fruits/new' do
+      @categories = db.execute('SELECT * FROM categories')
       erb(:"fruits/new")
     end
 
     # Routen sparar en frukt till databasen och gör en redirect till '/fruits'.
-    #
-    # ToDo
-    #     1). Läs fruit_name & fruit_description från params
-    #     3). Kör SQL för att lägga till den nya frukten i databasen
-    #     4). Redirect
     post '/fruits' do
       ap params
       name = params["fruit_name"]
       description = params["fruit_description"]
+      category_id = params["category_id"]
 
-      db.execute("INSERT INTO products (name, description) VALUES(?,?)", [name, description])
+      db.execute("INSERT INTO products (name, description, category_id) VALUES(?,?,?)", [name, description, category_id])
 
       redirect("/fruits")
     end
 
     # Routen visar all info för frukten med id:t
+    #
+    # Fruktens kategori ligger i en annan tabell, så den hämtas med en
+    # andra fråga. category_id i products pekar på id i categories.
     get '/fruits/:id' do | id |
       @fruit = db.execute('SELECT * FROM products WHERE id=?', id).first
+      @category = db.execute('SELECT * FROM categories WHERE id=?', @fruit['category_id']).first
       ap @fruit
+      ap @category
       erb(:"fruits/show")
     end
 
@@ -63,31 +65,42 @@ class App < Sinatra::Base
     end
 
     # Routen visar ett formulär på edit.erb med datan för frukten med id
-    #
-    # ToDo
-    #     1). Hämta info (från databasen) om frukten med id
-    #     2). Visa infon i fruits/edit.erb
     get '/fruits/:id/edit' do | id |
       ap "Hämtar info om frukten med id: #{id}"
       @fruit = db.execute('SELECT * FROM products WHERE id=?', id).first
+      @categories = db.execute('SELECT * FROM categories')
       ap @fruit
       erb(:"fruits/edit")
     end
 
     # Routen sparar ändringarna från formuläret
-    #
-    # ToDo
-    #     1). Läs fruktens namn + beskrivning från params (formuläret)
-    #     2). Kör SQL för att uppdatera datan i databasen
-    #     3). Redirect
     post "/fruits/:id/update" do | id |
       f_name = params["fruit_name"]
-      f_category = params["fruit_description"]
+      f_description = params["fruit_description"]
+      f_category_id = params["category_id"]
 
-      sql = "UPDATE products SET name =?, description=? WHERE id =?"
-      db.execute(sql, [f_name, f_category, id])
+      sql = "UPDATE products SET name =?, description =?, category_id =? WHERE id =?"
+      db.execute(sql, [f_name, f_description, f_category_id, id])
 
       redirect("/fruits")
+    end
+
+    # Routen hämtar alla kategorier i databasen
+    get '/categories' do
+      @categories = db.execute('SELECT * FROM categories')
+      ap @categories
+      erb(:"categories/index")
+    end
+
+    # Routen visar en kategori och frukterna som hör till den.
+    #
+    # Två frågor: en för kategorin, en för frukterna som pekar på den.
+    get '/categories/:id' do | id |
+      @category = db.execute('SELECT * FROM categories WHERE id=?', id).first
+      @fruits = db.execute('SELECT * FROM products WHERE category_id=?', id)
+      ap @category
+      ap @fruits
+      erb(:"categories/show")
     end
 
 end
