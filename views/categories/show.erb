@@ -1,0 +1,9 @@
+<h2><%= @category['name'] %></h2>
+<%= @category['description'] %>
+<ul>
+<% @fruits.each do | fruit | %>
+    <li>
+        <%= fruit["name"] %>
+    </li>
+<% end %>
+</ul>
