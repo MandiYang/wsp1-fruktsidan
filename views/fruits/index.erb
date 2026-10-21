@@ -10,7 +10,8 @@
         </form>
         <form action="/fruits/<%=fruit["id"]%>/edit" method="get"> 
             <input type="submit" value="Ändra" />
-        </form>
+        </form> | <a href="/categories/<%= fruit["category_id"]%>">
+			<%= fruit["category_name"] %></a>
     </li>
 <% end %>
 </ul>
